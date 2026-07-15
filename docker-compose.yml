@@ -1,0 +1,23 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: role_task_manager
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  app:
+    image: role-based-task-manager:1.0
+    container_name: springboot-container
+    depends_on:
+      - mysql
+    ports:
+      - "8081:8081"
+
+volumes:
+  mysql-data:
