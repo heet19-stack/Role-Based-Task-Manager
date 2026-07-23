@@ -1,3 +1,31 @@
+#name: Spring Boot CI
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#
+#      - name: Set up JDK 21
+#        uses: actions/setup-java@v4
+#        with:
+#          java-version: '21'
+#          distribution: 'temurin'
+#
+#      - name: Make Maven Wrapper executable
+#        run: chmod +x mvnw
+#
+#      - name: Build with Maven
+#        run: ./mvnw clean verify
+#
+
+
 name: Spring Boot CI
 
 on:
@@ -8,6 +36,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: admin
+          MYSQL_DATABASE: role_task_manager
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
 
     steps:
       - uses: actions/checkout@v4
@@ -23,4 +65,7 @@ jobs:
 
       - name: Build with Maven
         run: ./mvnw clean verify
-
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/role_task_manager
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: admin
